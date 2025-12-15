@@ -1,1024 +1,1036 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>История СППР | Decision Support Systems</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #3e2723;
-            overflow-x: hidden;
-        }
-
-        /* Hero Section */
-        .hero {
-            height: 100vh;
-            background: linear-gradient(135deg, #8d6e63 0%, #6d4c41 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: #fdf8f3;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(253,248,243,0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: moveBackground 20s linear infinite;
-        }
-
-        @keyframes moveBackground {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-            padding: 20px;
-            max-width: 900px;
-        }
-
-        .hero h1 {
-            font-size: 3.5em;
-            margin-bottom: 20px;
-            animation: fadeInUp 1s ease;
-        }
-
-        .hero p {
-            font-size: 1.3em;
-            margin-bottom: 30px;
-            animation: fadeInUp 1s ease 0.3s backwards;
-        }
-
-        .scroll-indicator {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
-            40% { transform: translateX(-50%) translateY(-10px); }
-            60% { transform: translateX(-50%) translateY(-5px); }
-        }
-
-        /* Menu Button */
-        .menu-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #8d6e63 0%, #6d4c41 100%);
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            z-index: 2000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 5px;
-            box-shadow: 0 5px 15px rgba(109, 76, 65, 0.4);
-            transition: all 0.3s ease;
-        }
-
-        .menu-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 20px rgba(109, 76, 65, 0.6);
-        }
-
-        .menu-button span {
-            width: 25px;
-            height: 3px;
-            background: #fdf8f3;
-            border-radius: 2px;
-            transition: all 0.3s ease;
-        }
-
-        .menu-button.active span:nth-child(1) {
-            transform: rotate(45deg) translate(7px, 7px);
-        }
-
-        .menu-button.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .menu-button.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -7px);
-        }
-
-        /* Side Menu */
-        .side-menu {
-            position: fixed;
-            top: 0;
-            right: -350px;
-            width: 350px;
-            height: 100vh;
-            background: #fdf8f3;
-            box-shadow: -5px 0 25px rgba(62, 39, 35, 0.2);
-            z-index: 1999;
-            transition: right 0.4s ease;
-            overflow-y: auto;
-            padding: 80px 0 20px 0;
-        }
-
-        .side-menu.active {
-            right: 0;
-        }
-
-        .menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(62, 39, 35, 0.5);
-            z-index: 1998;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .menu-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .side-menu ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .side-menu li {
-            border-bottom: 1px solid #efebe9;
-        }
-
-        .side-menu a {
-            display: block;
-            padding: 20px 30px;
-            text-decoration: none;
-            color: #3e2723;
-            font-weight: 600;
-            font-size: 1.1em;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .side-menu a::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 5px;
-            background: linear-gradient(135deg, #8d6e63 0%, #6d4c41 100%);
-            transform: scaleY(0);
-            transition: transform 0.3s ease;
-        }
-
-        .side-menu a:hover {
-            background: #f5f0ec;
-            padding-left: 40px;
-        }
-
-        .side-menu a:hover::before {
-            transform: scaleY(1);
-        }
-
-        .menu-header {
-            padding: 0 30px 20px 30px;
-            border-bottom: 2px solid #8d6e63;
-            margin-bottom: 10px;
-        }
-
-        .menu-header h3 {
-            color: #6d4c41;
-            font-size: 1.4em;
-        }
-
-        /* Sections */
-        section {
-            padding: 80px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            font-size: 2.5em;
-            text-align: center;
-            margin-bottom: 50px;
-            color: #6d4c41;
-            position: relative;
-        }
-
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 100px;
-            height: 4px;
-            background: linear-gradient(to right, #8d6e63, #6d4c41);
-            margin: 20px auto;
-            border-radius: 2px;
-        }
-
-        /* Definition Section */
-        .definition-box {
-            background: linear-gradient(135deg, #fdf8f3 0%, #efebe9 100%);
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(62, 39, 35, 0.1);
-        }
-
-        .definition-box h3 {
-            color: #6d4c41;
-            font-size: 1.8em;
-            margin-bottom: 20px;
-        }
-
-        .components {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .component-card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(62, 39, 35, 0.1);
-            transition: transform 0.3s;
-            border-left: 4px solid #a1887f;
-        }
-
-        .component-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .component-card h4 {
-            color: #5d4037;
-            margin-bottom: 10px;
-        }
-
-        /* Timeline */
-        .timeline {
-            position: relative;
-            padding: 40px 0;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(to bottom, #8d6e63, #6d4c41);
-        }
-
-        .timeline-item {
-            margin-bottom: 50px;
-            position: relative;
-        }
-
-        .timeline-item:nth-child(odd) .timeline-content {
-            margin-left: auto;
-            margin-right: 0;
-        }
-
-        .timeline-content {
-            width: 45%;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(62, 39, 35, 0.1);
-            position: relative;
-        }
-
-        .timeline-content::before {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: #8d6e63;
-            border: 4px solid white;
-            border-radius: 50%;
-            top: 30px;
-        }
-
-        .timeline-item:nth-child(odd) .timeline-content::before {
-            right: -60px;
-        }
-
-        .timeline-item:nth-child(even) .timeline-content::before {
-            left: -60px;
-        }
-
-        .timeline-year {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #6d4c41;
-            margin-bottom: 15px;
-        }
-
-        /* People Cards */
-        .people-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .person-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(62, 39, 35, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .person-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(62, 39, 35, 0.2);
-        }
-
-        .person-header {
-            background: linear-gradient(135deg, #8d6e63 0%, #6d4c41 100%);
-            color: #fdf8f3;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .person-header h3 {
-            font-size: 1.5em;
-            margin-bottom: 5px;
-        }
-
-        .person-header p {
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-
-        .person-body {
-            padding: 25px;
-        }
-
-        /* Applications */
-        .app-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-        }
-
-        .app-card {
-            background: linear-gradient(135deg, #8d6e63 0%, #6d4c41 100%);
-            color: #fdf8f3;
-            padding: 35px;
-            border-radius: 15px;
-            transition: transform 0.3s;
-            cursor: pointer;
-        }
-
-        .app-card:hover {
-            transform: scale(1.05);
-        }
-
-        .app-card h3 {
-            font-size: 1.6em;
-            margin-bottom: 15px;
-        }
-
-        /* Future Section */
-        .future-section {
-            background: linear-gradient(135deg, #fdf8f3 0%, #efebe9 100%);
-            padding: 60px 40px;
-            border-radius: 15px;
-            margin-top: 40px;
-        }
-
-        .future-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .future-item:nth-child(1) {
-            grid-column: 1 / 3;
-        }
-
-        .future-item:nth-child(2) {
-            grid-column: 3 / 5;
-        }
-
-        .future-item:nth-child(3) {
-            grid-column: 5 / 7;
-        }
-
-        .future-item:nth-child(4) {
-            grid-column: 2 / 4;
-        }
-
-        .future-item:nth-child(5) {
-            grid-column: 4 / 6;
-        }
-
-        .future-item {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            border-left: 4px solid #8d6e63;
-        }
-
-        /* Footer */
-        footer {
-            background: #3e2723;
-            color: #fdf8f3;
-            text-align: center;
-            padding: 30px;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2em;
-            }
-
-            .hero p {
-                font-size: 1em;
-            }
-
-            .timeline::before {
-                left: 30px;
-            }
-
-            .timeline-content {
-                width: calc(100% - 80px);
-                margin-left: 60px !important;
-            }
-
-            .timeline-item:nth-child(odd) .timeline-content::before,
-            .timeline-item:nth-child(even) .timeline-content::before {
-                left: -60px;
-            }
-
-            .side-menu {
-                width: 100%;
-                right: -100%;
-            }
-
-            .menu-button {
-                top: 15px;
-                right: 15px;
-            }
-
-            .people-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .future-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .future-item:nth-child(4),
-            .future-item:nth-child(5) {
-                grid-column: auto;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>История СППР | Decision Support Systems</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* Светлее тема через CSS-переменные */
+    :root{
+      --bg:#ffffff;
+      --bg-2:#fffaf6;
+      --text:#2b1f1b;
+      --muted:#6f5a53;
+      --card:#ffffff;
+
+      --accent:#a07a70;
+      --accent-2:#7a5b52;
+      --accent-3:#e6d5cf;
+
+      --ring:2px solid rgba(160, 122, 112, 0.45);
+
+      --shadow-1:0 8px 22px rgba(36, 22, 18, 0.08);
+      --shadow-2:0 14px 36px rgba(36, 22, 18, 0.12);
+    }
+
+    body{
+      font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+      line-height:1.65;
+      color:var(--text);
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      overflow-x:hidden;
+    }
+
+    :target{ scroll-margin-top:24px; }
+
+    /* Hero */
+    .hero{
+      height:100vh;
+      background: radial-gradient(1000px 520px at 50% -10%, #ead8d2 0%, #b48d82 55%, #7a5b52 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      color:#ffffff;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::before{
+      content:'';
+      position:absolute;
+      width:200%;
+      height:200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.16) 1px, transparent 1px);
+      background-size:56px 56px;
+      animation: moveBackground 26s linear infinite;
+    }
+
+    @keyframes moveBackground{
+      0%{ transform:translate(0,0); }
+      100%{ transform:translate(60px,60px); }
+    }
+
+    .hero-content{
+      position:relative;
+      z-index:1;
+      padding:20px;
+      max-width:980px;
+    }
+
+    .hero h1{
+      font-size:3.1em;
+      margin-bottom:18px;
+      animation: fadeInUp 1s ease;
+      text-shadow:0 2px 14px rgba(0,0,0,0.18);
+      letter-spacing:0.2px;
+    }
+
+    .hero p{
+      font-size:1.22em;
+      margin-bottom:30px;
+      animation: fadeInUp 1s ease .3s backwards;
+      color: rgba(255,255,255,0.95);
+    }
+
+    .scroll-indicator{
+      position:absolute;
+      bottom:26px;
+      left:50%;
+      transform:translateX(-50%);
+      animation:bounce 2s infinite;
+      opacity:.95;
+    }
+
+    @keyframes fadeInUp{
+      from{ opacity:0; transform:translateY(30px); }
+      to{ opacity:1; transform:translateY(0); }
+    }
+
+    @keyframes bounce{
+      0%,20%,50%,80%,100%{ transform:translateX(-50%) translateY(0); }
+      40%{ transform:translateX(-50%) translateY(-10px); }
+      60%{ transform:translateX(-50%) translateY(-5px); }
+    }
+
+    /* Menu button */
+    .menu-button{
+      position:fixed;
+      top:20px;
+      right:20px;
+      width:50px;
+      height:50px;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      border:1px solid rgba(255,255,255,0.18);
+      border-radius:12px;
+      cursor:pointer;
+      z-index:2000;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      gap:5px;
+      box-shadow:var(--shadow-2);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .menu-button:hover{
+      transform: translateY(-1px) scale(1.04);
+      box-shadow: 0 18px 44px rgba(36, 22, 18, 0.16);
+    }
+
+    .menu-button:focus-visible{
+      outline:var(--ring);
+      outline-offset:3px;
+    }
+
+    .menu-button span{
+      width:25px;
+      height:3px;
+      background:#ffffff;
+      border-radius:2px;
+      transition:all .3s ease;
+    }
+
+    .menu-button.active span:nth-child(1){ transform: rotate(45deg) translate(7px,7px); }
+    .menu-button.active span:nth-child(2){ opacity:0; }
+    .menu-button.active span:nth-child(3){ transform: rotate(-45deg) translate(7px,-7px); }
+
+    /* Side menu */
+    .side-menu{
+      position:fixed;
+      top:0;
+      right:-350px;
+      width:350px;
+      height:100vh;
+      background:#ffffff;
+      box-shadow:-10px 0 34px rgba(36, 22, 18, 0.12);
+      z-index:1999;
+      transition:right .4s ease;
+      overflow-y:auto;
+      padding:80px 0 20px 0;
+      border-left:1px solid rgba(230, 213, 207, 0.8);
+    }
+
+    .side-menu.active{ right:0; }
+
+    .menu-overlay{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background: rgba(36, 22, 18, 0.42);
+      z-index:1998;
+      opacity:0;
+      visibility:hidden;
+      transition: all .25s ease;
+      backdrop-filter: blur(1px);
+    }
+
+    .menu-overlay.active{ opacity:1; visibility:visible; }
+
+    .side-menu ul{ list-style:none; padding:0; }
+    .side-menu li{ border-bottom:1px solid rgba(230, 213, 207, 0.65); }
+
+    .side-menu a{
+      display:block;
+      padding:18px 28px;
+      text-decoration:none;
+      color:var(--text);
+      font-weight:650;
+      font-size:1.05em;
+      transition: all .25s ease;
+      position:relative;
+    }
+
+    .side-menu a::before{
+      content:'';
+      position:absolute;
+      left:0;
+      top:0;
+      height:100%;
+      width:5px;
+      background:linear-gradient(135deg, var(--accent-3) 0%, var(--accent-2) 100%);
+      transform:scaleY(0);
+      transition:transform .25s ease;
+    }
+
+    .side-menu a:hover{ background: rgba(255, 250, 246, 0.9); padding-left:38px; }
+    .side-menu a:hover::before{ transform:scaleY(1); }
+
+    .side-menu a:focus-visible{
+      outline:var(--ring);
+      outline-offset:3px;
+      border-radius:10px;
+    }
+
+    .menu-header{
+      padding:0 28px 18px 28px;
+      border-bottom:2px solid var(--accent-3);
+      margin-bottom:10px;
+    }
+
+    .menu-header h3{
+      color:var(--accent-2);
+      font-size:1.35em;
+      letter-spacing:.2px;
+    }
+
+    /* Sections */
+    section{
+      padding:80px 20px;
+      max-width:1200px;
+      margin:0 auto;
+    }
+
+    .section-title{
+      font-size:2.4em;
+      text-align:center;
+      margin-bottom:50px;
+      color:var(--accent-2);
+      position:relative;
+      font-weight:850;
+      letter-spacing:.2px;
+    }
+
+    .section-title::after{
+      content:'';
+      display:block;
+      width:110px;
+      height:4px;
+      background:linear-gradient(to right, var(--accent-3), var(--accent-2));
+      margin:20px auto 0 auto;
+      border-radius:2px;
+      opacity:.95;
+    }
+
+    /* Definition box */
+    .definition-box{
+      background: linear-gradient(135deg, #ffffff 0%, #fff7f2 100%);
+      padding:40px;
+      border-radius:16px;
+      box-shadow:var(--shadow-1);
+      border:1px solid rgba(230, 213, 207, 0.75);
+    }
+
+    .definition-box h3{
+      color:var(--accent-2);
+      font-size:1.75em;
+      margin-bottom:18px;
+      letter-spacing:.2px;
+    }
+
+    /* Grid cards */
+    .components{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+      gap:20px;
+      margin-top:28px;
+    }
+
+    .component-card{
+      background:var(--card);
+      padding:24px;
+      border-radius:12px;
+      box-shadow:var(--shadow-1);
+      transition:transform .2s ease, box-shadow .2s ease;
+      border:1px solid rgba(230, 213, 207, 0.75);
+      border-left:4px solid var(--accent-3);
+    }
+
+    .component-card:hover{
+      transform:translateY(-4px);
+      box-shadow:var(--shadow-2);
+    }
+
+    .component-card h4{
+      color:var(--accent-2);
+      margin-bottom:10px;
+      letter-spacing:.2px;
+    }
+
+    /* Apps */
+    .app-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+      gap:22px;
+    }
+
+    .app-card{
+      background:var(--card);
+      color:var(--text);
+      padding:30px;
+      border-radius:16px;
+      transition: transform .22s ease, box-shadow .22s ease;
+      cursor:pointer;
+      box-shadow:var(--shadow-1);
+      border:1px solid rgba(230, 213, 207, 0.75);
+      border-left:4px solid var(--accent-2);
+    }
+
+    .app-card:hover{
+      transform:translateY(-4px);
+      box-shadow:var(--shadow-2);
+    }
+
+    .app-card h3{
+      font-size:1.55em;
+      margin-bottom:12px;
+      color:var(--accent-2);
+      letter-spacing:.2px;
+    }
+
+    /* NEW: Stepper for "How it works" (не как история и не как timeline) */
+    .process{
+      margin-top: 14px;
+    }
+
+    .process-steps{
+      list-style:none;
+      display:grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap:16px;
+      position:relative;
+      padding-top: 8px;
+    }
+
+    /* тонкая соединяющая линия (не "временная шкала") */
+    .process-steps::before{
+      content:'';
+      position:absolute;
+      left: calc(100% / 12);
+      right: calc(100% / 12);
+      top: 29px;
+      height: 2px;
+      background: rgba(230, 213, 207, 0.95);
+      border-radius: 2px;
+    }
+
+    .process-step{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-width: 0;
+      position:relative;
+      z-index:1;
+    }
+
+    .step-badge{
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      margin: 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-weight: 850;
+      letter-spacing: 0.2px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      box-shadow: var(--shadow-1);
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+
+    .step-card{
+      background: var(--card);
+      border-radius: 16px;
+      border: 1px solid rgba(230, 213, 207, 0.75);
+      box-shadow: var(--shadow-1);
+      padding: 18px 18px;
+      height: 100%;
+    }
+
+    .step-card h3{
+      font-size: 1.05em;
+      margin-bottom: 8px;
+      color: var(--accent-2);
+      letter-spacing: 0.2px;
+    }
+
+    .step-card p{
+      color: var(--text);
+      font-size: 0.98em;
+      line-height: 1.55;
+    }
+
+    /* History timeline (без линии) */
+    .history-timeline{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      margin-top:10px;
+    }
+
+    .history-item{
+      display:grid;
+      grid-template-columns: 160px 1fr;
+      gap:18px;
+      align-items:start;
+    }
+
+    .history-year{
+      position:sticky;
+      top:16px;
+      align-self:start;
+
+      padding:10px 12px;
+      border-radius:12px;
+      font-weight:800;
+      color:#fff;
+
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow:var(--shadow-1);
+      letter-spacing:0.2px;
+    }
+
+    .history-card{
+      background:var(--card);
+      padding:22px;
+      border-radius:16px;
+      border:1px solid rgba(230, 213, 207, 0.75);
+      box-shadow:var(--shadow-1);
+    }
+
+    .history-card h3{
+      margin-bottom:8px;
+      color:var(--accent-2);
+      letter-spacing:.2px;
+    }
+
+    /* People */
+    .people-grid{
+      display:grid;
+      grid-template-columns:repeat(2, 1fr);
+      gap:30px;
+      margin-top:40px;
+    }
+
+    .person-card{
+      background:var(--card);
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:var(--shadow-1);
+      transition: transform .25s ease, box-shadow .25s ease;
+      border:1px solid rgba(230, 213, 207, 0.75);
+    }
+
+    .person-card:hover{
+      transform:translateY(-8px);
+      box-shadow:var(--shadow-2);
+    }
+
+    .person-header{
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      color:#ffffff;
+      padding:28px;
+      text-align:center;
+    }
+
+    .person-header h3{
+      font-size:1.45em;
+      margin-bottom:6px;
+      letter-spacing:.2px;
+    }
+
+    .person-header p{ font-size:.92em; opacity:.95; }
+    .person-body{ padding:24px; color:var(--text); }
+
+    /* Future */
+    .future-section{
+      background: linear-gradient(135deg, #ffffff 0%, #fff7f2 100%);
+      padding:60px 40px;
+      border-radius:16px;
+      margin-top:40px;
+      box-shadow:var(--shadow-1);
+      border:1px solid rgba(230, 213, 207, 0.75);
+    }
+
+    .future-grid{
+      display:grid;
+      grid-template-columns:repeat(6, 1fr);
+      gap:20px;
+      margin-top:30px;
+    }
+
+    .future-item:nth-child(1){ grid-column:1/3; }
+    .future-item:nth-child(2){ grid-column:3/5; }
+    .future-item:nth-child(3){ grid-column:5/7; }
+    .future-item:nth-child(4){ grid-column:2/4; }
+    .future-item:nth-child(5){ grid-column:4/6; }
+
+    .future-item{
+      background:var(--card);
+      padding:22px;
+      border-radius:12px;
+      border-left:4px solid var(--accent-3);
+      box-shadow:var(--shadow-1);
+      border:1px solid rgba(230, 213, 207, 0.75);
+    }
+
+    .future-item h4{
+      color:var(--accent-2);
+      margin-bottom:8px;
+      letter-spacing:.2px;
+    }
+
+    /* Footer */
+    footer{
+      background:#2a1a16;
+      color:#f7efe9;
+      text-align:center;
+      padding:30px;
+    }
+
+    /* Mobile */
+    @media (max-width:768px){
+      .hero h1{ font-size:2.05em; }
+      .hero p{ font-size:1.02em; }
+
+      .side-menu{ width:100%; right:-100%; }
+      .menu-button{ top:15px; right:15px; }
+
+      .people-grid{ grid-template-columns:1fr; }
+
+      /* process stepper -> vertical cards */
+      .process-steps{
+        grid-template-columns: 1fr;
+        padding-top: 0;
+      }
+      .process-steps::before{ display:none; }
+      .step-badge{ margin: 0; }
+      .process-step{
+        display:grid;
+        grid-template-columns: 44px 1fr;
+        align-items:start;
+        gap:12px;
+      }
+
+      /* history timeline */
+      .history-item{ grid-template-columns:1fr; }
+      .history-year{ position:static; width:fit-content; }
+
+      .future-grid{ grid-template-columns:1fr; }
+      .future-item:nth-child(1),
+      .future-item:nth-child(2),
+      .future-item:nth-child(3),
+      .future-item:nth-child(4),
+      .future-item:nth-child(5){ grid-column:auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ animation:none !important; transition:none !important; }
+      html{ scroll-behavior:auto !important; }
+    }
+  </style>
 </head>
+
 <body>
-    <!-- Menu Button -->
-    <button class="menu-button" id="menuButton">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
+  <!-- Menu Button -->
+  <button class="menu-button" id="menuButton" aria-label="Открыть меню навигации">
+    <span></span><span></span><span></span>
+  </button>
 
-    <!-- Menu Overlay -->
-    <div class="menu-overlay" id="menuOverlay"></div>
+  <!-- Menu Overlay -->
+  <div class="menu-overlay" id="menuOverlay"></div>
 
-    <!-- Side Menu -->
-    <nav class="side-menu" id="sideMenu">
-        <div class="menu-header">
-            <h3>Навигация</h3>
+  <!-- Side Menu -->
+  <nav class="side-menu" id="sideMenu" aria-label="Навигация по странице">
+    <div class="menu-header"><h3>Навигация</h3></div>
+    <ul>
+      <li><a href="#hero"> Главная</a></li>
+      <li><a href="#definition"> Что такое СППР</a></li>
+      <li><a href="#classification"> Классификация</a></li>
+      <li><a href="#how-it-works"> Как работает</a></li>
+      <li><a href="#timeline"> История развития</a></li>
+      <li><a href="#people"> Отцы-основатели</a></li>
+      <li><a href="#applications"> Применение</a></li>
+      <li><a href="#future"> Будущее</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="hero">
+    <div class="hero-content">
+      <h1>История развития систем поддержки принятия решений</h1>
+      <p>От первых компьютерных систем до современного искусственного интеллекта — путешествие длиной в полвека</p>
+    </div>
+    <div class="scroll-indicator" aria-hidden="true">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="#ffffff">
+        <path d="M7 10l5 5 5-5z" />
+      </svg>
+    </div>
+  </section>
+
+  <!-- Definition -->
+  <section id="definition">
+    <h2 class="section-title">Что такое СППР?</h2>
+    <div class="definition-box">
+      <h3>Определение</h3>
+      <p style="font-size: 1.1em; line-height: 1.8;">
+        <strong>Система поддержки принятия решений (СППР)</strong> — это компьютерная информационная система,
+        которая помогает людям и организациям принимать обоснованные решения на основе анализа данных,
+        моделирования и визуализации информации.
+      </p>
+
+      <h3 style="margin-top: 30px;">Ключевые компоненты</h3>
+      <div class="components">
+        <div class="component-card">
+          <h4> База данных</h4>
+          <p>Хранение и управление структурированной информацией для анализа</p>
         </div>
-        <ul>
-            <li><a href="#hero"> Главная</a></li>
-            <li><a href="#definition"> Что такое СППР</a></li>
-            <li><a href="#classification"> Классификация</a></li>
-            <li><a href="#how-it-works"> Как работает</a></li>
-            <li><a href="#timeline"> История развития</a></li>
-            <li><a href="#people"> Отцы-основатели</a></li>
-            <li><a href="#applications"> Применение</a></li>
-            <li><a href="#future"> Будущее</a></li>
-        </ul>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hero" id="hero">
-        <div class="hero-content">
-            <h1>История развития систем поддержки принятия решений</h1>
-            <p>От первых компьютерных систем до современного искусственного интеллекта — путешествие длиной в полвека</p>
+        <div class="component-card">
+          <h4> База моделей</h4>
+          <p>Аналитические инструменты и алгоритмы для обработки данных</p>
         </div>
-        <div class="scroll-indicator">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="#fdf8f3">
-                <path d="M7 10l5 5 5-5z"/>
-            </svg>
+        <div class="component-card">
+          <h4> Интерфейс</h4>
+          <p>Средства взаимодействия пользователя с системой</p>
         </div>
-    </section>
-
-    <!-- Definition Section -->
-    <section id="definition">
-        <h2 class="section-title">Что такое СППР?</h2>
-        <div class="definition-box">
-            <h3>Определение</h3>
-            <p style="font-size: 1.1em; line-height: 1.8;">
-                <strong>Система поддержки принятия решений (СППР)</strong> — это компьютерная информационная система, 
-                которая помогает людям и организациям принимать обоснованные решения на основе анализа данных, 
-                моделирования и визуализации информации.
-            </p>
-            
-            <h3 style="margin-top: 30px;">Ключевые компоненты</h3>
-            <div class="components">
-                <div class="component-card">
-                    <h4> База данных</h4>
-                    <p>Хранение и управление структурированной информацией для анализа</p>
-                </div>
-                <div class="component-card">
-                    <h4> База моделей</h4>
-                    <p>Аналитические инструменты и алгоритмы для обработки данных</p>
-                </div>
-                <div class="component-card">
-                    <h4> Интерфейс</h4>
-                    <p>Средства взаимодействия пользователя с системой</p>
-                </div>
-                <div class="component-card">
-                    <h4> База знаний</h4>
-                    <p>Экспертные правила и механизмы управления знаниями</p>
-                </div>
-            </div>
+        <div class="component-card">
+          <h4> База знаний</h4>
+          <p>Экспертные правила и механизмы управления знаниями</p>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- Classification Section -->
-    <section id="classification">
-        <h2 class="section-title">Классификация СППР</h2>
-        
-        <div style="margin-bottom: 50px;">
-            <h3 style="color: #6d4c41; font-size: 1.8em; margin-bottom: 25px; text-align: center;">По уровню управления</h3>
-            <div class="components">
-                <div class="component-card">
-                    <h4> Стратегические</h4>
-                    <p><strong>Для кого:</strong> Топ-менеджмент, совет директоров</p>
-                    <p><strong>Задачи:</strong> Долгосрочное планирование, определение целей компании, анализ конкурентов</p>
-                    <p><strong>Горизонт:</strong> 3-5 лет</p>
-                </div>
-                <div class="component-card">
-                    <h4> Тактические</h4>
-                    <p><strong>Для кого:</strong> Менеджеры среднего звена</p>
-                    <p><strong>Задачи:</strong> Распределение ресурсов, оптимизация процессов, контроль выполнения планов</p>
-                    <p><strong>Горизонт:</strong> Месяцы, кварталы</p>
-                </div>
-                <div class="component-card">
-                    <h4> Операционные</h4>
-                    <p><strong>Для кого:</strong> Специалисты, операторы</p>
-                    <p><strong>Задачи:</strong> Ежедневные операции, обработка транзакций, контроль качества</p>
-                    <p><strong>Горизонт:</strong> Дни, часы, минуты</p>
-                </div>
-            </div>
+  <!-- Classification -->
+  <section id="classification">
+    <h2 class="section-title">Классификация СППР</h2>
+
+    <div style="margin-bottom: 50px;">
+      <h3 style="color: var(--accent-2); font-size: 1.8em; margin-bottom: 25px; text-align: center;">По уровню управления</h3>
+      <div class="components">
+        <div class="component-card">
+          <h4> Стратегические</h4>
+          <p><strong>Для кого:</strong> Топ-менеджмент, совет директоров</p>
+          <p><strong>Задачи:</strong> Долгосрочное планирование, определение целей компании, анализ конкурентов</p>
+          <p><strong>Горизонт:</strong> 3-5 лет</p>
         </div>
-
-        <div style="margin-bottom: 50px;">
-            <h3 style="color: #6d4c41; font-size: 1.8em; margin-bottom: 25px; text-align: center;">По функциональности и архитектуре</h3>
-            <div class="app-grid">
-                <div class="app-card">
-                    <h3> Модельно-ориентированные</h3>
-                    <p><strong>Основа:</strong> Математические и статистические модели</p>
-                    <p><strong>Примеры:</strong> Финансовое моделирование, прогнозирование продаж, оптимизация производства</p>
-                    <p><strong>Инструменты:</strong> Excel, MATLAB, специализированное ПО</p>
-                </div>
-                <div class="app-card">
-                    <h3> Данно-ориентированные</h3>
-                    <p><strong>Основа:</strong> Большие объёмы данных и их анализ</p>
-                    <p><strong>Примеры:</strong> Data Warehouse, OLAP-системы, бизнес-аналитика</p>
-                    <p><strong>Инструменты:</strong> SQL базы данных, Power BI, Tableau</p>
-                </div>
-                <div class="app-card">
-                    <h3> Коммуникационно-ориентированные</h3>
-                    <p><strong>Основа:</strong> Совместная работа и групповые решения</p>
-                    <p><strong>Примеры:</strong> Системы видеоконференций, collaborative platforms, голосования</p>
-                    <p><strong>Инструменты:</strong> Zoom, Microsoft Teams, групповые DSS</p>
-                </div>
-                <div class="app-card">
-                    <h3> Документо-ориентированные</h3>
-                    <p><strong>Основа:</strong> Работа с документами и текстовой информацией</p>
-                    <p><strong>Примеры:</strong> Системы управления документами, поиск по базам знаний</p>
-                    <p><strong>Инструменты:</strong> SharePoint, Confluence, DMS</p>
-                </div>
-                <div class="app-card">
-                    <h3> Знание-ориентированные</h3>
-                    <p><strong>Основа:</strong> Экспертные знания и правила</p>
-                    <p><strong>Примеры:</strong> Экспертные системы, системы диагностики, AI-ассистенты</p>
-                    <p><strong>Инструменты:</strong> Системы с AI, машинное обучение</p>
-                </div>
-                <div class="app-card">
-                    <h3> Веб-ориентированные</h3>
-                    <p><strong>Основа:</strong> Облачные технологии и доступ через браузер</p>
-                    <p><strong>Примеры:</strong> Google Analytics, облачные BI-платформы</p>
-                    <p><strong>Инструменты:</strong> SaaS решения, веб-приложения</p>
-                </div>
-            </div>
+        <div class="component-card">
+          <h4> Тактические</h4>
+          <p><strong>Для кого:</strong> Менеджеры среднего звена</p>
+          <p><strong>Задачи:</strong> Распределение ресурсов, оптимизация процессов, контроль выполнения планов</p>
+          <p><strong>Горизонт:</strong> Месяцы, кварталы</p>
         </div>
-
-        <div class="definition-box">
-            <h3>Гибридные системы</h3>
-            <p style="font-size: 1.1em; line-height: 1.8;">
-                Современные СППР часто <strong>комбинируют несколько подходов</strong>. Например, система может одновременно 
-                использовать большие данные (данно-ориентированный подход), применять модели машинного обучения 
-                (знание-ориентированный) и работать через веб-интерфейс (веб-ориентированный). Такая гибридность 
-                позволяет создавать более мощные и универсальные решения.
-            </p>
+        <div class="component-card">
+          <h4> Операционные</h4>
+          <p><strong>Для кого:</strong> Специалисты, операторы</p>
+          <p><strong>Задачи:</strong> Ежедневные операции, обработка транзакций, контроль качества</p>
+          <p><strong>Горизонт:</strong> Дни, часы, минуты</p>
         </div>
-    </section>
+      </div>
+    </div>
 
-    <!-- How It Works Section -->
-    <section id="how-it-works">
-        <h2 class="section-title">Как работает СППР</h2>
-        
-        <div class="definition-box" style="margin-bottom: 40px;">
-            <h3>Общая схема работы</h3>
-            <p style="font-size: 1.1em; line-height: 1.8; margin-bottom: 30px;">
-                Система поддержки принятия решений проходит через несколько ключевых этапов, 
-                преобразуя сырые данные в полезную информацию для принятия решений.
-            </p>
+    <div style="margin-bottom: 50px;">
+      <h3 style="color: var(--accent-2); font-size: 1.8em; margin-bottom: 25px; text-align: center;">По функциональности и архитектуре</h3>
+      <div class="app-grid">
+        <div class="app-card">
+          <h3> Модельно-ориентированные</h3>
+          <p><strong>Основа:</strong> Математические и статистические модели</p>
+          <p><strong>Примеры:</strong> Финансовое моделирование, прогнозирование продаж, оптимизация производства</p>
+          <p><strong>Инструменты:</strong> Excel, MATLAB, специализированное ПО</p>
         </div>
-
-        <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-year" style="color: #8d6e63;">Этап 1</div>
-                    <h3>Сбор данных</h3>
-                    <p><strong>Источники:</strong> Внутренние базы данных, ERP-системы, CRM, внешние источники (рынок, конкуренты), IoT-датчики, социальные сети</p>
-                    <p><strong>Процесс:</strong> Автоматический импорт, ручной ввод, интеграция через API</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-year" style="color: #8d6e63;">Этап 2</div>
-                    <h3>Хранение и организация</h3>
-                    <p><strong>Технологии:</strong> Реляционные базы данных (SQL), NoSQL базы, Data Warehouses, Data Lakes</p>
-                    <p><strong>Процесс:</strong> Структурирование, индексация, обеспечение целостности и безопасности данных</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-year" style="color: #8d6e63;">Этап 3</div>
-                    <h3>Обработка и анализ</h3>
-                    <p><strong>Методы:</strong> Статистический анализ, Data Mining, машинное обучение, прогнозирование</p>
-                    <p><strong>Инструменты:</strong> OLAP-кубы, аналитические движки, алгоритмы оптимизации</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-year" style="color: #8d6e63;">Этап 4</div>
-                    <h3>Моделирование сценариев</h3>
-                    <p><strong>Функции:</strong> "Что если?" анализ, симуляция, оценка рисков, сравнение альтернатив</p>
-                    <p><strong>Результат:</strong> Прогнозы различных вариантов развития событий</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-year" style="color: #8d6e63;">Этап 5</div>
-                    <h3>Визуализация</h3>
-                    <p><strong>Формы:</strong> Графики, диаграммы, дашборды, интерактивные отчёты, карты, инфографика</p>
-                    <p><strong>Цель:</strong> Представить сложные данные в понятном и наглядном виде</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-year" style="color: #8d6e63;">Этап 6</div>
-                    <h3>Принятие решения</h3>
-                    <p><strong>Роль человека:</strong> Интерпретация результатов, оценка рекомендаций, выбор оптимального варианта</p>
-                    <p><strong>Роль системы:</strong> Предоставление рекомендаций, оценка последствий, документирование решения</p>
-                </div>
-            </div>
+        <div class="app-card">
+          <h3> Данно-ориентированные</h3>
+          <p><strong>Основа:</strong> Большие объёмы данных и их анализ</p>
+          <p><strong>Примеры:</strong> Data Warehouse, OLAP-системы, бизнес-аналитика</p>
+          <p><strong>Инструменты:</strong> SQL базы данных, Power BI, Tableau</p>
         </div>
-
-        <div style="margin-top: 50px;">
-            <h3 style="color: #6d4c41; font-size: 1.8em; margin-bottom: 25px; text-align: center;">Ключевые процессы</h3>
-            <div class="components">
-                <div class="component-card">
-                    <h4> Непрерывный цикл</h4>
-                    <p>СППР работает в режиме постоянного мониторинга: данные обновляются, модели пересчитываются, рекомендации актуализируются в реальном времени</p>
-                </div>
-                <div class="component-card">
-                    <h4> Интерактивность</h4>
-                    <p>Пользователь может задавать вопросы, менять параметры, проверять гипотезы и получать мгновенную обратную связь от системы</p>
-                </div>
-                <div class="component-card">
-                    <h4> Обучение</h4>
-                    <p>Современные СППР используют машинное обучение для улучшения точности прогнозов на основе исторических данных и результатов решений</p>
-                </div>
-                <div class="component-card">
-                    <h4> Безопасность</h4>
-                    <p>Контроль доступа, шифрование, аудит действий обеспечивают защиту конфиденциальных данных и соответствие регуляторным требованиям</p>
-                </div>
-            </div>
+        <div class="app-card">
+          <h3> Коммуникационно-ориентированные</h3>
+          <p><strong>Основа:</strong> Совместная работа и групповые решения</p>
+          <p><strong>Примеры:</strong> Системы видеоконференций, collaborative platforms, голосования</p>
+          <p><strong>Инструменты:</strong> Zoom, Microsoft Teams, групповые DSS</p>
         </div>
-
-        <div class="future-section" style="margin-top: 50px;">
-            <h3 style="color: #6d4c41; font-size: 1.6em; margin-bottom: 20px;">Пример работы СППР в розничной торговле</h3>
-            <p style="font-size: 1.05em; line-height: 1.8;">
-                <strong>Задача:</strong> Оптимизация закупок товаров для сети магазинов<br><br>
-                
-                <strong>1. Сбор:</strong> Система собирает данные о продажах, остатках на складах, ценах поставщиков, погоде, праздниках<br>
-                <strong>2. Анализ:</strong> Выявляет сезонные тренды, популярные товары, зависимости (например, зонты продаются лучше в дождь)<br>
-                <strong>3. Прогноз:</strong> Предсказывает спрос на следующую неделю для каждого магазина<br>
-                <strong>4. Моделирование:</strong> Рассчитывает оптимальный объём закупок с учётом бюджета и сроков годности<br>
-                <strong>5. Визуализация:</strong> Показывает менеджеру дашборд с рекомендациями по закупкам<br>
-                <strong>6. Решение:</strong> Менеджер корректирует рекомендации на основе своего опыта и утверждает заказ<br><br>
-                
-                <strong>Результат:</strong> Сокращение потерь от нераспроданного товара на 25%, увеличение продаж на 15%
-            </p>
+        <div class="app-card">
+          <h3> Документо-ориентированные</h3>
+          <p><strong>Основа:</strong> Работа с документами и текстовой информацией</p>
+          <p><strong>Примеры:</strong> Системы управления документами, поиск по базам знаний</p>
+          <p><strong>Инструменты:</strong> SharePoint, Confluence, DMS</p>
         </div>
-    </section>
-
-    <!-- Timeline Section -->
-    <section id="timeline">
-        <h2 class="section-title">Временная шкала развития</h2>
-        <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-year">1960-е годы</div>
-                    <h3>Зарождение концепции</h3>
-                    <p>Появление первых управленческих информационных систем (MIS). Герберт Саймон разрабатывает теорию принятия решений и концепцию "ограниченной рациональности".</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-year">1970-е годы</div>
-                    <h3>Формирование теории СППР</h3>
-                    <p>1971 год: Майкл Скотт Мортон создает первую DSS. Появление термина "Decision Support Systems". Работы Питера Кина и Ральфа Спрейга закладывают теоретическую основу.</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-year">1980-е годы</div>
-                    <h3>Эра персональных компьютеров</h3>
-                    <p>Массовое распространение ПК делает СППР доступными. Развитие электронных таблиц (VisiCalc, Lotus 1-2-3). Появление экспертных систем и групповых СППР.</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-year">1990-е годы</div>
-                    <h3>Интеграция и хранилища данных</h3>
-                    <p>Появление концепции Data Warehouse. Развитие OLAP-технологий. Executive Information Systems (EIS) для топ-менеджмента. Интеграция с корпоративными системами ERP.</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-year">2000-е годы</div>
-                    <h3>Бизнес-интеллект</h3>
-                    <p>Термин Business Intelligence становится популярным. Развитие Data Mining и предиктивной аналитики. Веб-ориентированные СППР. Системы реального времени.</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-year">2010-е годы</div>
-                    <h3>Большие данные и AI</h3>
-                    <p>Big Data технологии революционизируют обработку информации. Машинное обучение интегрируется в СППР. Визуализация данных (Tableau, Power BI). Облачные решения.</p>
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-year">2020-е годы</div>
-                    <h3>Интеллектуальные системы</h3>
-                    <p>Искусственный интеллект и глубокое обучение. Natural Language Processing для запросов. Автоматизированное принятие решений. Этические вопросы AI-решений.</p>
-                </div>
-            </div>
+        <div class="app-card">
+          <h3> Знание-ориентированные</h3>
+          <p><strong>Основа:</strong> Экспертные знания и правила</p>
+          <p><strong>Примеры:</strong> Экспертные системы, системы диагностики, AI-ассистенты</p>
+          <p><strong>Инструменты:</strong> Системы с AI, машинное обучение</p>
         </div>
-    </section>
-
-    <!-- People Section -->
-    <section id="people">
-        <h2 class="section-title">Отцы-основатели</h2>
-        <div class="people-grid">
-            <div class="person-card">
-                <div class="person-header">
-                    <h3>Герберт Саймон</h3>
-                    <p>1916-2001</p>
-                </div>
-                <div class="person-body">
-                    <p><strong>Нобелевский лауреат</strong>, заложивший основы теории принятия решений. Разработал концепцию "ограниченной рациональности", которая объясняет, как люди принимают решения в условиях неполной информации.</p>
-                </div>
-            </div>
-
-            <div class="person-card">
-                <div class="person-header">
-                    <h3>Майкл Скотт Мортон</h3>
-                    <p>Род. 1938</p>
-                </div>
-                <div class="person-body">
-                    <p><strong>"Отец систем поддержки принятия решений"</strong>. В 1971 году создал первую DSS для управления производством. Его работы определили развитие области на десятилетия вперед.</p>
-                </div>
-            </div>
-
-            <div class="person-card">
-                <div class="person-header">
-                    <h3>Билл Инмон</h3>
-                    <p>Род. 1945</p>
-                </div>
-                <div class="person-body">
-                    <p><strong>"Отец концепции Data Warehouse"</strong>, революционизировал подходы к хранению и организации данных для аналитических целей. Его идеи легли в основу современных BI-систем.</p>
-                </div>
-            </div>
-
-            <div class="person-card">
-                <div class="person-header">
-                    <h3>Ральф Спрейг</h3>
-                    <p>1940-2020</p>
-                </div>
-                <div class="person-body">
-                    <p>Автор классических работ по <strong>архитектуре СППР</strong> в 1980-х годах. Его книга "Building Effective Decision Support Systems" стала настольным пособием для специалистов.</p>
-                </div>
-            </div>
+        <div class="app-card">
+          <h3> Веб-ориентированные</h3>
+          <p><strong>Основа:</strong> Облачные технологии и доступ через браузер</p>
+          <p><strong>Примеры:</strong> Google Analytics, облачные BI-платформы</p>
+          <p><strong>Инструменты:</strong> SaaS решения, веб-приложения</p>
         </div>
-    </section>
+      </div>
+    </div>
 
-    <!-- Applications Section -->
-    <section id="applications">
-        <h2 class="section-title">Современные применения</h2>
-        <div class="app-grid">
-            <div class="app-card">
-                <h3> Медицина</h3>
-                <p>Диагностические системы, планирование лечения, прогнозирование эпидемий, оптимизация работы клиник</p>
-            </div>
-            <div class="app-card">
-                <h3> Финансы</h3>
-                <p>Оценка рисков, торговые алгоритмы, кредитный скоринг, выявление мошенничества</p>
-            </div>
-            <div class="app-card">
-                <h3> Логистика</h3>
-                <p>Оптимизация маршрутов и складов, управление цепями поставок, прогнозирование спроса</p>
-            </div>
-            <div class="app-card">
-                <h3> Маркетинг</h3>
-                <p>Персонализация предложений, прогнозирование поведения клиентов, оптимизация рекламных кампаний</p>
-            </div>
-            <div class="app-card">
-                <h3> Госуправление</h3>
-                <p>Анализ политик, прогнозирование социальных трендов, оптимизация государственных услуг</p>
-            </div>
-            <div class="app-card">
-                <h3> Производство</h3>
-                <p>Управление качеством, оптимизация процессов, предиктивное обслуживание оборудования</p>
-            </div>
+    <div class="definition-box">
+      <h3>Гибридные системы</h3>
+      <p style="font-size: 1.1em; line-height: 1.8;">
+        Современные СППР часто <strong>комбинируют несколько подходов</strong>. Например, система может одновременно
+        использовать большие данные (данно-ориентированный подход), применять модели машинного обучения
+        (знание-ориентированный) и работать через веб-интерфейс (веб-ориентированный). Такая гибридность
+        позволяет создавать более мощные и универсальные решения.
+      </p>
+    </div>
+  </section>
+
+  <!-- How it works (NEW STEPPER) -->
+  <section id="how-it-works">
+    <h2 class="section-title">Как работает СППР</h2>
+
+    <div class="definition-box" style="margin-bottom: 40px;">
+      <h3>Общая схема работы</h3>
+      <p style="font-size: 1.1em; line-height: 1.8;">
+        Система поддержки принятия решений проходит через несколько ключевых этапов, преобразуя данные в информацию для выбора решения.
+      </p>
+    </div>
+
+    <div class="process">
+      <ol class="process-steps">
+        <li class="process-step">
+          <div class="step-badge">1</div>
+          <div class="step-card">
+            <h3>Сбор данных</h3>
+            <p><strong>Источники:</strong> внутренние БД, ERP/CRM, внешние источники, IoT-датчики, соцсети.</p>
+            <p><strong>Как:</strong> импорт, ручной ввод, интеграция через API.</p>
+          </div>
+        </li>
+
+        <li class="process-step">
+          <div class="step-badge">2</div>
+          <div class="step-card">
+            <h3>Хранение и организация</h3>
+            <p><strong>Технологии:</strong> SQL/NoSQL, Data Warehouse, Data Lake.</p>
+            <p><strong>Цель:</strong> порядок, целостность, безопасность и быстрый доступ.</p>
+          </div>
+        </li>
+
+        <li class="process-step">
+          <div class="step-badge">3</div>
+          <div class="step-card">
+            <h3>Обработка и анализ</h3>
+            <p><strong>Методы:</strong> статистика, Data Mining, машинное обучение, прогнозирование.</p>
+            <p><strong>Инструменты:</strong> OLAP, аналитические движки, оптимизация.</p>
+          </div>
+        </li>
+
+        <li class="process-step">
+          <div class="step-badge">4</div>
+          <div class="step-card">
+            <h3>Моделирование сценариев</h3>
+            <p><strong>Функции:</strong> «what-if», симуляции, оценка рисков, сравнение альтернатив.</p>
+            <p><strong>Результат:</strong> последствия решений для разных вариантов.</p>
+          </div>
+        </li>
+
+        <li class="process-step">
+          <div class="step-badge">5</div>
+          <div class="step-card">
+            <h3>Визуализация</h3>
+            <p><strong>Формы:</strong> графики, диаграммы, дашборды, отчёты, карты.</p>
+            <p><strong>Смысл:</strong> быстро показать ключевые выводы.</p>
+          </div>
+        </li>
+
+        <li class="process-step">
+          <div class="step-badge">6</div>
+          <div class="step-card">
+            <h3>Принятие решения</h3>
+            <p><strong>Роль человека:</strong> интерпретировать и выбрать.</p>
+            <p><strong>Роль системы:</strong> подсказать варианты и зафиксировать решение.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <div style="margin-top: 50px;">
+      <h3 style="color: var(--accent-2); font-size: 1.8em; margin-bottom: 25px; text-align: center;">Ключевые процессы</h3>
+      <div class="components">
+        <div class="component-card">
+          <h4> Непрерывный цикл</h4>
+          <p>СППР работает в режиме мониторинга: данные обновляются, модели пересчитываются, рекомендации актуализируются.</p>
         </div>
-    </section>
-
-    <!-- Future Section -->
-    <section id="future">
-        <h2 class="section-title">Будущее СППР</h2>
-        <div class="future-section">
-            <p style="font-size: 1.2em; text-align: center; margin-bottom: 30px;">
-                Системы поддержки принятия решений продолжают эволюционировать, интегрируя новейшие достижения 
-                искусственного интеллекта и вычислительных технологий.
-            </p>
-            <div class="future-grid">
-                <div class="future-item">
-                    <h4> Автономные системы</h4>
-                    <p>Полностью автоматизированное принятие решений в режиме реального времени с минимальным участием человека</p>
-                </div>
-                <div class="future-item">
-                    <h4> Объяснимый AI</h4>
-                    <p>Прозрачные алгоритмы, способные объяснить логику своих решений и рекомендаций</p>
-                </div>
-                <div class="future-item">
-                    <h4> Квантовые вычисления</h4>
-                    <p>Решение сверхсложных оптимизационных задач за считанные секунды</p>
-                </div>
-                <div class="future-item">
-                    <h4> Этика и регулирование</h4>
-                    <p>Разработка стандартов и законов для ответственного использования AI в принятии решений</p>
-                </div>
-                <div class="future-item">
-                    <h4> Гибридный интеллект</h4>
-                    <p>Симбиоз человеческой интуиции и вычислительной мощности искусственного интеллекта</p>
-                </div>
-            </div>
+        <div class="component-card">
+          <h4> Интерактивность</h4>
+          <p>Пользователь может менять параметры, проверять гипотезы и получать обратную связь.</p>
         </div>
-    </section>
+        <div class="component-card">
+          <h4> Обучение</h4>
+          <p>Современные СППР используют машинное обучение для повышения точности прогнозов.</p>
+        </div>
+        <div class="component-card">
+          <h4> Безопасность</h4>
+          <p>Контроль доступа, шифрование и аудит действий защищают данные и решения.</p>
+        </div>
+      </div>
+    </div>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy;  История развития систем поддержки принятия решений</p>
-        <p style="margin-top: 10px; font-size: 0.9em;">Индивидуальное задание по дисциплине "Введение в профессию"</p>
-        <p style="margin-top: 10px; font-size: 0.9em;">Выполнил: Сейдалин В.К, группа ИВТ-2512</p>
-    </footer>
+    <div class="future-section" style="margin-top: 50px;">
+      <h3 style="color: var(--accent-2); font-size: 1.6em; margin-bottom: 20px;">Пример работы СППР в розничной торговле</h3>
+      <p style="font-size: 1.05em; line-height: 1.8;">
+        <strong>Задача:</strong> Оптимизация закупок товаров для сети магазинов<br><br>
+        <strong>1. Сбор:</strong> продажи, остатки, цены, погода, праздники<br>
+        <strong>2. Анализ:</strong> тренды и зависимости<br>
+        <strong>3. Прогноз:</strong> спрос по магазинам<br>
+        <strong>4. Моделирование:</strong> оптимальный объём закупок<br>
+        <strong>5. Визуализация:</strong> дашборд рекомендаций<br>
+        <strong>6. Решение:</strong> менеджер утверждает заказ<br><br>
+        <strong>Результат:</strong> Сокращение потерь от нераспроданного товара на 25%, увеличение продаж на 15%
+      </p>
+    </div>
+  </section>
 
-    <script>
-        // Menu Toggle
-        const menuButton = document.getElementById('menuButton');
-        const sideMenu = document.getElementById('sideMenu');
-        const menuOverlay = document.getElementById('menuOverlay');
+  <!-- History timeline (уже без линии) -->
+  <section id="timeline">
+    <h2 class="section-title">Временная шкала развития</h2>
 
-        function toggleMenu() {
-            menuButton.classList.toggle('active');
-            sideMenu.classList.toggle('active');
-            menuOverlay.classList.toggle('active');
+    <div class="history-timeline">
+      <article class="history-item">
+        <div class="history-year">1960-е годы</div>
+        <div class="history-card">
+          <h3>Зарождение концепции</h3>
+          <p>Появление первых управленческих информационных систем (MIS). Герберт Саймон разрабатывает теорию принятия решений и концепцию "ограниченной рациональности".</p>
+        </div>
+      </article>
+
+      <article class="history-item">
+        <div class="history-year">1970-е годы</div>
+        <div class="history-card">
+          <h3>Формирование теории СППР</h3>
+          <p>1971 год: Майкл Скотт Мортон создает первую DSS. Появление термина "Decision Support Systems". Работы Питера Кина и Ральфа Спрейга закладывают теоретическую основу.</p>
+        </div>
+      </article>
+
+      <article class="history-item">
+        <div class="history-year">1980-е годы</div>
+        <div class="history-card">
+          <h3>Эра персональных компьютеров</h3>
+          <p>Массовое распространение ПК делает СППР доступными. Развитие электронных таблиц (VisiCalc, Lotus 1-2-3). Появление экспертных систем и групповых СППР.</p>
+        </div>
+      </article>
+
+      <article class="history-item">
+        <div class="history-year">1990-е годы</div>
+        <div class="history-card">
+          <h3>Интеграция и хранилища данных</h3>
+          <p>Появление концепции Data Warehouse. Развитие OLAP-технологий. Executive Information Systems (EIS) для топ-менеджмента. Интеграция с корпоративными системами ERP.</p>
+        </div>
+      </article>
+
+      <article class="history-item">
+        <div class="history-year">2000-е годы</div>
+        <div class="history-card">
+          <h3>Бизнес-интеллект</h3>
+          <p>Термин Business Intelligence становится популярным. Развитие Data Mining и предиктивной аналитики. Веб-ориентированные СППР. Системы реального времени.</p>
+        </div>
+      </article>
+
+      <article class="history-item">
+        <div class="history-year">2010-е годы</div>
+        <div class="history-card">
+          <h3>Большие данные и AI</h3>
+          <p>Big Data технологии революционизируют обработку информации. Машинное обучение интегрируется в СППР. Визуализация данных (Tableau, Power BI). Облачные решения.</p>
+        </div>
+      </article>
+
+      <article class="history-item">
+        <div class="history-year">2020-е годы</div>
+        <div class="history-card">
+          <h3>Интеллектуальные системы</h3>
+          <p>Искусственный интеллект и глубокое обучение. Natural Language Processing для запросов. Автоматизированное принятие решений. Этические вопросы AI-решений.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- People -->
+  <section id="people">
+    <h2 class="section-title">Отцы-основатели</h2>
+    <div class="people-grid">
+      <div class="person-card">
+        <div class="person-header">
+          <h3>Герберт Саймон</h3>
+          <p>1916-2001</p>
+        </div>
+        <div class="person-body">
+          <p><strong>Нобелевский лауреат</strong>, заложивший основы теории принятия решений. Разработал концепцию "ограниченной рациональности", которая объясняет, как люди принимают решения в условиях неполной информации.</p>
+        </div>
+      </div>
+
+      <div class="person-card">
+        <div class="person-header">
+          <h3>Майкл Скотт Мортон</h3>
+          <p>Род. 1938</p>
+        </div>
+        <div class="person-body">
+          <p><strong>"Отец систем поддержки принятия решений"</strong>. В 1971 году создал первую DSS для управления производством. Его работы определили развитие области на десятилетия вперед.</p>
+        </div>
+      </div>
+
+      <div class="person-card">
+        <div class="person-header">
+          <h3>Билл Инмон</h3>
+          <p>Род. 1945</p>
+        </div>
+        <div class="person-body">
+          <p><strong>"Отец концепции Data Warehouse"</strong>, революционизировал подходы к хранению и организации данных для аналитических целей. Его идеи легли в основу современных BI-систем.</p>
+        </div>
+      </div>
+
+      <div class="person-card">
+        <div class="person-header">
+          <h3>Ральф Спрейг</h3>
+          <p>1940-2020</p>
+        </div>
+        <div class="person-body">
+          <p>Автор классических работ по <strong>архитектуре СППР</strong> в 1980-х годах. Его книга "Building Effective Decision Support Systems" стала настольным пособием для специалистов.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Applications -->
+  <section id="applications">
+    <h2 class="section-title">Современные применения</h2>
+    <div class="app-grid">
+      <div class="app-card"><h3> Медицина</h3><p>Диагностические системы, планирование лечения, прогнозирование эпидемий, оптимизация работы клиник</p></div>
+      <div class="app-card"><h3> Финансы</h3><p>Оценка рисков, торговые алгоритмы, кредитный скоринг, выявление мошенничества</p></div>
+      <div class="app-card"><h3> Логистика</h3><p>Оптимизация маршрутов и складов, управление цепями поставок, прогнозирование спроса</p></div>
+      <div class="app-card"><h3> Маркетинг</h3><p>Персонализация предложений, прогнозирование поведения клиентов, оптимизация рекламных кампаний</p></div>
+      <div class="app-card"><h3> Госуправление</h3><p>Анализ политик, прогнозирование социальных трендов, оптимизация государственных услуг</p></div>
+      <div class="app-card"><h3> Производство</h3><p>Управление качеством, оптимизация процессов, предиктивное обслуживание оборудования</p></div>
+    </div>
+  </section>
+
+  <!-- Future -->
+  <section id="future">
+    <h2 class="section-title">Будущее СППР</h2>
+    <div class="future-section">
+      <p style="font-size: 1.2em; text-align: center; margin-bottom: 30px;">
+        Системы поддержки принятия решений продолжают эволюционировать, интегрируя новейшие достижения
+        искусственного интеллекта и вычислительных технологий.
+      </p>
+
+      <div class="future-grid">
+        <div class="future-item"><h4> Автономные системы</h4><p>Полностью автоматизированное принятие решений в режиме реального времени с минимальным участием человека</p></div>
+        <div class="future-item"><h4> Объяснимый AI</h4><p>Прозрачные алгоритмы, способные объяснить логику своих решений и рекомендаций</p></div>
+        <div class="future-item"><h4> Квантовые вычисления</h4><p>Решение сверхсложных оптимизационных задач за считанные секунды</p></div>
+        <div class="future-item"><h4> Этика и регулирование</h4><p>Разработка стандартов и законов для ответственного использования AI в принятии решений</p></div>
+        <div class="future-item"><h4> Гибридный интеллект</h4><p>Симбиоз человеческой интуиции и вычислительной мощности искусственного интеллекта</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; История развития систем поддержки принятия решений</p>
+    <p style="margin-top: 10px; font-size: 0.9em;">Индивидуальное задание по дисциплине "Введение в профессию"</p>
+    <p style="margin-top: 10px; font-size: 0.9em;">Выполнил: Сейдалин В.К, группа ИВТ-2512</p>
+  </footer>
+
+  <script>
+    // Menu Toggle
+    const menuButton = document.getElementById('menuButton');
+    const sideMenu = document.getElementById('sideMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+
+    function toggleMenu() {
+      menuButton.classList.toggle('active');
+      sideMenu.classList.toggle('active');
+      menuOverlay.classList.toggle('active');
+    }
+
+    menuButton.addEventListener('click', toggleMenu);
+    menuOverlay.addEventListener('click', toggleMenu);
+
+    // Close menu when clicking on a link
+    document.querySelectorAll('.side-menu a').forEach(link => {
+      link.addEventListener('click', () => toggleMenu());
+    });
+
+    // Smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Animate on scroll
+    const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
         }
+      });
+    }, observerOptions);
 
-        menuButton.addEventListener('click', toggleMenu);
-        menuOverlay.addEventListener('click', toggleMenu);
-
-        // Close menu when clicking on a link
-        document.querySelectorAll('.side-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                toggleMenu();
-            });
-        });
-
-        // Smooth scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Animate on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.timeline-item, .person-card, .app-card, .component-card').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(el);
-        });
-    </script>
+    document.querySelectorAll(
+      '.history-item, .process-step, .person-card, .app-card, .component-card, .future-item'
+    ).forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(el);
+    });
+  </script>
 </body>
-
 </html>
-
-
-
-
